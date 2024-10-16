@@ -1,0 +1,196 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define structures
+struct Book {
+    int id;
+    char title[100];
+    char author[100];
+    char genre[50];
+    float price;
+    int quantity;
+    struct Book *next;
+};
+
+struct Customer {
+    int id;
+    char name[100];
+    char address[200];
+    char contact[20];
+    struct Customer *next;
+};
+
+struct Order {
+    int customer_id;
+    int book_id;
+    int quantity;
+    float total_price;
+    struct Order *next;
+};
+
+// Function prototypes
+void addBook(struct Book **head);
+void addCustomer(struct Customer **head);
+void placeOrder(struct Order **head, struct Book *books, struct Customer *customers);
+void displayBooks(struct Book *head);
+void displayCustomers(struct Customer *head);
+void displayOrders(struct Order *head);
+void displayTransactions(struct Order *head, struct Book *books);
+
+// Function definitions
+void addBook(struct Book **head) {
+    struct Book *newBook = (struct Book*)malloc(sizeof(struct Book));
+    printf("Enter book ID: ");
+    scanf("%d", &newBook->id);
+    printf("Enter book title: ");
+    scanf(" %[^\n]", newBook->title);
+    printf("Enter book author: ");
+    scanf(" %[^\n]", newBook->author);
+    printf("Enter book genre: ");
+    scanf(" %[^\n]", newBook->genre);
+    printf("Enter book price: ");
+    scanf("%f", &newBook->price);
+    printf("Enter book quantity: ");
+    scanf("%d", &newBook->quantity);
+    newBook->next = *head;
+    *head = newBook;
+    printf("Book added successfully!\n");
+}
+
+void addCustomer(struct Customer **head) {
+    struct Customer *newCustomer = (struct Customer*)malloc(sizeof(struct Customer));
+    printf("Enter customer ID: ");
+    scanf("%d", &newCustomer->id);
+    printf("Enter customer name: ");
+    scanf(" %[^\n]", newCustomer->name);
+    printf("Enter customer address: ");
+    scanf(" %[^\n]", newCustomer->address);
+    printf("Enter customer contact: ");
+    scanf(" %[^\n]", newCustomer->contact);
+    newCustomer->next = *head;
+    *head = newCustomer;
+    printf("Customer added successfully!\n");
+}
+
+void placeOrder(struct Order **head, struct Book *books, struct Customer *customers) {
+    int customer_id, book_id, quantity;
+    printf("Enter customer ID: ");
+    scanf("%d", &customer_id);
+    printf("Enter book ID: ");
+    scanf("%d", &book_id);
+    printf("Enter quantity: ");
+    scanf("%d", &quantity);
+
+    // Search for customer and book
+    struct Customer *customer = customers;
+    while (customer != NULL && customer->id != customer_id) {
+        customer = customer->next;
+    }
+    struct Book *book = books;
+    while (book != NULL && book->id != book_id) {
+        book = book->next;
+    }
+
+    if (customer == NULL || book == NULL) {
+        printf("Error: Customer or book not found.\n");
+        return;
+    }
+
+    if (book->quantity < quantity) {
+printf("Error: Insufficient quantity in stock.\n");
+        return;
+    }
+
+    struct Order *newOrder = (struct Order*)malloc(sizeof(struct Order));
+    newOrder->customer_id = customer_id;
+    newOrder->book_id = book_id;
+    newOrder->quantity = quantity;
+    newOrder->total_price = book->price * quantity;
+    newOrder->next = *head;
+    *head = newOrder;
+    book->quantity -= quantity;
+
+    printf("Order placed successfully!\n");
+}
+void displayBooks(struct Book *head) {
+    printf("===== Books =====\n");
+    while (head != NULL) {
+        printf("ID: %d, Title: %s, Author: %s, Genre: %s, Price: $%.2f, Quantity: %d\n", head->id, head->title, head->author, head->genre, head->price, head->quantity);
+        head = head->next;
+    
+break;}
+printf("Books are not available\n");
+
+}
+void displayCustomers(struct Customer *head) {
+    printf("===== Customers =====\n");
+    while (head != NULL) {
+        printf("ID: %d, Name: %s, Address: %s, Contact: %s\n", head->id, head->name, head->address, head->contact);
+        head = head->next;
+    }
+}
+void displayOrders(struct Order *head) {
+    printf("===== Orders =====\n");
+    while (head != NULL) {
+        printf("Customer ID: %d, Book ID: %d, Quantity: %d, Total Price: $%.2f\n", head->customer_id, head->book_id, head->quantity, head->total_price);
+        head = head->next;
+   break; }
+printf("No Orders Available...");
+
+}
+
+
+int main() {
+    // Initialize linked lists
+    struct Book *books = NULL;
+    struct Customer *customers = NULL;
+    struct Order *orders = NULL;
+
+
+    int choice;
+    do {
+        printf("\n===== Online Bookstore Management System =====\n");
+        printf("1. Add Book\n");
+        printf("2. Add Customer\n");
+        printf("3. Place Order\n");
+printf("4. Display Book\n");
+
+        printf("5. Display Customers\n");
+        printf("6. Display Orders\n");
+       
+        printf("7. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addBook(&books);
+                break;
+            case 2:
+                addCustomer(&customers);
+                break;
+            case 3:
+                placeOrder(&orders, books, customers);
+                break;
+            case 4:
+				displayBooks(books);
+                break;
+			case 5:
+                displayCustomers(customers);
+                break;
+			case 6:
+                displayOrders(orders);
+                break;
+			
+			case 7:
+				
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please enter a number between 1 and 7.\n");
+        }
+    } while (choice != 6);
+
+    return 0;
+}
